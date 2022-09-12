@@ -1,0 +1,35 @@
+{
+  "name": "@holymarcell/three-d-line",
+  "version": "0.0.1",
+  "description": "React component for drawing lines in 3d space",
+  "module": "dist/index.js",
+  "typings": "dist/types/index.d.ts",
+  "files": [
+    "dist",
+    "index.d.ts"
+  ],
+  "scripts": {
+    "start": "rollup -cw",
+    "build": "NODE_ENV=production rollup -c",
+    "release:patch": "node release.js patch",
+    "release:minor": "node release.js minor",
+    "release:major": "node release.js major"
+  },
+  "author": "Tristan Döhl",
+  "license": "SEE LICENSE IN license.md",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^22.0.2",
+    "@rollup/plugin-node-resolve": "^14.0.1",
+    "@rollup/plugin-typescript": "^8.5.0",
+    "@types/react": "^18.0.19",
+    "rollup": "^2.79.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-terser": "^7.0.2",
+    "tslib": "^2.4.0",
+    "typescript": "^4.8.3"
+  }
+}
