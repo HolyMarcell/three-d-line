@@ -1,3 +1,3 @@
-import {ThreeDLines} from "./ThreeDLines";
+import {ThreeDLine} from "./ThreeDLine";
 
-export {ThreeDLines};
+export {ThreeDLine};
