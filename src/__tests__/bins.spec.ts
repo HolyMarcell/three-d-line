@@ -4,7 +4,7 @@ import { ThreeDLine } from '../ThreeDLine';
 describe('bin doing bin things', () => {
   test('creating bins', () => {
 
-    const {createBin, getBins} = ThreeDLine({points: []});
+    const {createBin, getBins} = ThreeDLine({});
 
     expect(createBin).toBeDefined();
     expect(getBins).toBeDefined();

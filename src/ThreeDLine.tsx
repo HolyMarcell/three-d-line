@@ -1,59 +1,29 @@
 import * as t from 'three';
-// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { OrbitControls } from './vendor/OrbitControls';
-import { Maybe } from './util/types';
+import { sortByOrder } from './util/fns';
+import { addPointFactory, BinStore, createBinFactory } from './bins';
 
 
-interface Point3 {
-  x: number;
-  y: number;
-  z: number;
-  order: number;
-}
 
-type Color = string;
-
-type BinId = number;
-interface ColorGradient {
-  from: Color;
-  to: Color;
-}
-
-interface Bin {
-  id: BinId;
-  points: Point3[];
-  color: Color;
-  colorGradient: Maybe<ColorGradient>;
-}
 
 interface ThreeDLineProps {
   canvas?: {
     width?: number;
     height?: number;
-  },
-  points: Point3[];
+  }
 }
 
-
-interface BinStore {
-  bins: Bin[];
-  active: BinId;
-}
-
-interface CreateBinProps {
-  color?: Color;
-  colorGradient?: ColorGradient;
-}
-
-type CreateBinFn = (props: CreateBinProps) => void;
-
-export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas, points}) => {
+export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas}) => {
   const {width, height} = canvas || {width: 500, height: 500};
 
   const binStore: BinStore = {
-    active: 0,
-    bins: []
+    active: null,
+    bins: {}
   }
+
+  const createBin = createBinFactory(binStore);
+  const addPoints = addPointFactory(binStore);
+
 
   let renderer;
   let camera;
@@ -75,6 +45,7 @@ export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas, points}) =>
 
     scene = new t.Scene();
   }
+  setup();
 
   const doRender = () => {
     renderer.render(scene, camera);
@@ -82,8 +53,17 @@ export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas, points}) =>
 
 
 
-  const makePoints = () => {
+  const renderLine = () => {
     const material = new t.LineBasicMaterial({color: '#00ff00'});
+
+    const points = [
+      ...Object.keys(binStore.bins)
+        .map((binId) => binStore.bins[binId].points)
+    ]
+      .flat()
+      .sort(sortByOrder);
+
+
     const parsedPoints = points.map(({x, y, z}) => new t.Vector3(x, y, 10 * z));
     const geometry = new t.BufferGeometry().setFromPoints(parsedPoints);
     const line = new t.Line(geometry, material);
@@ -103,45 +83,23 @@ export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas, points}) =>
   }
 
   const startAnimation = () => {
+    doRender();
     animate();
   }
 
-
-  const newBinId = () => {
-    return (1 + Math.max(0, ...binStore.bins.map(({id}) => id)));
-  }
-
-  const createBin: CreateBinFn = ({color = null, colorGradient = null} = {}) => {
-    const newId = newBinId();
-    const newBin = {
-      id: newId,
-      color: color,
-      colorGradient: colorGradient,
-      points: []
-    };
-
-    if(color === null) {
-      if(colorGradient === null) {
-        newBin.color = "#00ff00"; // Lovely default green
-      } else {
-        newBin.color = colorGradient.from;
-      }
-    }
-
-    binStore.bins = [...binStore.bins, newBin ];
-    binStore.active = newId;
-
-  }
 
   const getBins = () => {
     return binStore;
   }
 
+
+
   return {
     canvas: renderer?.domElement,
-    setup,
     startAnimation,
     createBin,
+    renderLine,
+    addPoints,
     getBins,
   }
 }
