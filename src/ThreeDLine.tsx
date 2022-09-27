@@ -56,30 +56,6 @@ export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas}) => {
     renderer.render(scene, camera);
   }
 
-
-
-  const renderLine_org = () => {
-    const binIds = Object.keys(binStore.bins);
-
-    for(let binId of binIds) {
-      const {colorGradient, color, points} = binStore.bins[binId];
-      const material = new t.LineBasicMaterial({color: color});
-      const parsedPoints = points
-        .sort(sortByOrder)
-        .map(({x, y, z}) => new t.Vector3(x, y, z));
-
-      const geometry = new t.BufferGeometry().setFromPoints(parsedPoints);
-
-      const line = new t.Line(geometry, material);
-
-
-      scene.add(line);
-    }
-
-
-    doRender();
-  }
-
   const renderLine = () => {
     const binIds = Object.keys(binStore.bins);
 
@@ -114,7 +90,7 @@ export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas}) => {
       const geometry = new t.BufferGeometry().setFromPoints(parsedPoints);
       geometry.setAttribute('color', new t.BufferAttribute(colors, 3));
 
-      const material = new t.LineBasicMaterial({vertexColors: true});
+      const material = new t.LineBasicMaterial({vertexColors: true, linewidth: 50});
 
       const line = new t.Line(geometry, material);
 
