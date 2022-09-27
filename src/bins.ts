@@ -52,9 +52,29 @@ export const createBinFactory: CreateBinFnFactory =
   return binStore;
 }
 
+export const sanitizePoints = (points) => {
+  if(points?.length >= 0) {
+    return points.map((point) => {
+      if (point === undefined ||
+        point?.x === undefined ||
+        point?.y === undefined ||
+        point?.z === undefined
+      ) {
+        return null
+      }
+      return point
+    }).filter((v) => v !== null);
+  } else {
+    return []
+  }
+}
+
 export const addPointFactory =
   (binStore: BinStore) =>
     (points: Point3[]) => {
-  binStore.bins[binStore.active].points = binStore.bins[binStore.active].points.concat(points);
+
+  const sanitizedPoints = sanitizePoints(points)
+
+  binStore.bins[binStore.active].points = binStore.bins[binStore.active].points.concat(sanitizedPoints);
   return binStore;
 }

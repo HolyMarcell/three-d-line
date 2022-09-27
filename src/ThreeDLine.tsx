@@ -2,6 +2,9 @@ import * as t from 'three';
 import { OrbitControls } from './vendor/OrbitControls';
 import { sortByOrder } from './util/fns';
 import { addPointFactory, BinStore, createBinFactory } from './bins';
+import { BufferAttribute, Color } from 'three';
+import { RenderableVertex } from 'three/examples/jsm/renderers/Projector';
+import { parse } from 'ts-jest';
 
 
 
@@ -15,6 +18,8 @@ interface ThreeDLineProps {
 
 export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas}) => {
   const {width, height} = canvas || {width: 500, height: 500};
+
+  let isAnimating = false; // This tracks if the orbital control animation fn has been started
 
   const binStore: BinStore = {
     active: null,
@@ -53,38 +58,88 @@ export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas}) => {
 
 
 
+  const renderLine_org = () => {
+    const binIds = Object.keys(binStore.bins);
+
+    for(let binId of binIds) {
+      const {colorGradient, color, points} = binStore.bins[binId];
+      const material = new t.LineBasicMaterial({color: color});
+      const parsedPoints = points
+        .sort(sortByOrder)
+        .map(({x, y, z}) => new t.Vector3(x, y, z));
+
+      const geometry = new t.BufferGeometry().setFromPoints(parsedPoints);
+
+      const line = new t.Line(geometry, material);
+
+
+      scene.add(line);
+    }
+
+
+    doRender();
+  }
+
   const renderLine = () => {
-    const material = new t.LineBasicMaterial({color: '#00ff00'});
+    const binIds = Object.keys(binStore.bins);
 
-    const points = [
-      ...Object.keys(binStore.bins)
-        .map((binId) => binStore.bins[binId].points)
-    ]
-      .flat()
-      .sort(sortByOrder);
+    for(let binId of binIds) {
+      const {colorGradient, color, points} = binStore.bins[binId];
 
 
-    const parsedPoints = points.map(({x, y, z}) => new t.Vector3(x, y, 10 * z));
-    const geometry = new t.BufferGeometry().setFromPoints(parsedPoints);
-    const line = new t.Line(geometry, material);
+      const parsedPoints = points
+        .sort(sortByOrder)
+        .map(({x, y, z}) => new t.Vector3(x, y, 10 * z));
+
+      const cstart = new Color(colorGradient?.from || color);
+      const cend = new Color(colorGradient?.to || color);
+      const segLen = parsedPoints.length;
+
+      const diff = [
+        (cend.r - cstart.r) / segLen,
+        (cend.g - cstart.g) / segLen,
+        (cend.b - cstart.b) / segLen,
+      ]
+
+      const c = parsedPoints.map((_, i) => {
+        return [
+          cstart.r + (i * diff[0]),
+          cstart.g + (i * diff[1]),
+          cstart.b + (i * diff[2]),
+        ]
+      });
+
+      const colors = new Float32Array(c.flat());
+
+      const geometry = new t.BufferGeometry().setFromPoints(parsedPoints);
+      geometry.setAttribute('color', new t.BufferAttribute(colors, 3));
+
+      const material = new t.LineBasicMaterial({vertexColors: true});
+
+      const line = new t.Line(geometry, material);
 
 
-    scene.add(line);
+      scene.add(line);
+    }
+
+
     doRender();
   }
 
 
 
-  function animate() {
+  const animate = () => {
     requestAnimationFrame(animate);
     // required if controls.enableDamping or controls.autoRotate are set to true
     controls.update();
-
+    doRender();
   }
 
   const startAnimation = () => {
-    doRender();
-    animate();
+    if(!isAnimating) {
+      animate();
+      isAnimating = true;
+    }
   }
 
 
