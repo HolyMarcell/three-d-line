@@ -32,6 +32,7 @@ export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas}) => {
   let camera;
   let controls;
   let scene;
+  let stats;
 
 
   const setup = () => {
@@ -46,6 +47,7 @@ export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas}) => {
     controls = new OrbitControls(camera, renderer.domElement);
     controls.update();
 
+    stats = new Stats();
 
     scene = new t.Scene();
   }
@@ -64,7 +66,7 @@ export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas}) => {
 
       const parsedPoints = points
         .sort(sortByOrder)
-        .map(({x, y, z}) => new t.Vector3(x, y, 10 * z));
+        .map(({x, y, z}) => new t.Vector3(x, y, z));
 
       const cstart = new Color(colorGradient?.from || color);
       const cend = new Color(colorGradient?.to || color);
@@ -107,6 +109,7 @@ export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas}) => {
     requestAnimationFrame(animate);
     // required if controls.enableDamping or controls.autoRotate are set to true
     controls.update();
+    stats.update();
     doRender();
   }
 
@@ -131,5 +134,6 @@ export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas}) => {
     renderLine,
     addPoints,
     getBins,
+    stats,
   }
 }
