@@ -1,11 +1,9 @@
 import * as t from 'three';
+import { Color } from 'three';
 import { OrbitControls } from './vendor/OrbitControls';
 import { sortByOrder } from './util/fns';
 import { addPointFactory, BinStore, createBinFactory } from './bins';
-import { BufferAttribute, Color } from 'three';
-import { RenderableVertex } from 'three/examples/jsm/renderers/Projector';
-import { parse } from 'ts-jest';
-
+import Stats from './vendor/GpuStats';
 
 
 
@@ -47,6 +45,7 @@ export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas}) => {
 
     controls = new OrbitControls(camera, renderer.domElement);
     controls.update();
+
 
     scene = new t.Scene();
   }
