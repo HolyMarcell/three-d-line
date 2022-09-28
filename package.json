@@ -1,6 +1,6 @@
 {
   "name": "@holymarcell/three-d-line",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "React component for drawing lines in 3d space",
   "module": "dist/index.js",
   "typings": "dist/types/index.d.ts",
