@@ -16,9 +16,9 @@ export const parseGcode = (gcode: GCode) => {
   }
 
   const coordinates = onlyMovement.map((line) => {
-    const xre = /x[0-9]+([,.][0-9]+)?/;
-    const yre = /y[0-9]+([,.][0-9]+)?/;
-    const zre = /z[0-9]+([,.][0-9]+)?/;
+    const xre = /x-?[0-9]+([,.][0-9]+)?/;
+    const yre = /y-?[0-9]+([,.][0-9]+)?/;
+    const zre = /z-?[0-9]+([,.][0-9]+)?/;
 
     const xs = line.match(xre)?.[0] || null;
     const ys = line.match(yre)?.[0] || null;
