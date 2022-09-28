@@ -6,7 +6,7 @@ export const parseGcode = (gcode: GCode) => {
 
   const lc = gcode.map((line) => line.toLowerCase().trim());
 
-  const onlyMovement = lc.filter((line) => (line.startsWith('g1') || line.startsWith('g0')));
+  const onlyMovement = lc.filter((line) => (line.startsWith('g1 ') || line.startsWith('g0 ')));
 
 
   let _last_values = {
@@ -37,8 +37,7 @@ export const parseGcode = (gcode: GCode) => {
         x,
         y,
         z
-      };
-
+      }
       return {
         x,y,z
       }
