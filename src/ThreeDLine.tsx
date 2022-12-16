@@ -11,11 +11,23 @@ interface ThreeDLineProps {
   canvas?: {
     width?: number;
     height?: number;
+  },
+  camera?: {
+
+    // This moves the camera to a point in 3d-space.
+    // From this point on we look at 0,0,0
+    // Larger numbers are farther away from 0
+    position?: {
+      x: number;
+      y: number;
+      z: number;
+    }
   }
 }
 
-export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas}) => {
+export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas, ...rest}) => {
   const {width, height} = canvas || {width: 500, height: 500};
+  const {position: cameraPosition} = rest?.camera || {x: 0, y: -400, z: 400};
 
   let isAnimating = false; // This tracks if the orbital control animation fn has been started
 
@@ -36,19 +48,17 @@ export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas}) => {
 
 
   const setup = () => {
-    renderer = new t.WebGLRenderer();
+    renderer = new t.WebGLRenderer({alpha: true});
     renderer.setSize(width, height);
 
     camera = new t.PerspectiveCamera(45, width / height, 0.1, 20000);
-    camera.position.set(0, 0, 400);
+    camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
     camera.lookAt(0, 0, 0);
-
 
     controls = new OrbitControls(camera, renderer.domElement);
     controls.update();
 
     stats = new Stats();
-
     scene = new t.Scene();
   }
   setup();
@@ -90,12 +100,8 @@ export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas}) => {
 
       const geometry = new t.BufferGeometry().setFromPoints(parsedPoints);
       geometry.setAttribute('color', new t.BufferAttribute(colors, 3));
-
       const material = new t.LineBasicMaterial({vertexColors: true, linewidth: 50});
-
       const line = new t.Line(geometry, material);
-
-
       scene.add(line);
     }
 
