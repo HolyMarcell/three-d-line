@@ -27,7 +27,7 @@ interface ThreeDLineProps {
 
 export const ThreeDLine: (props: ThreeDLineProps) => any = ({canvas, ...rest}) => {
   const {width, height} = canvas || {width: 500, height: 500};
-  const {position: cameraPosition} = rest?.camera || {x: 0, y: -400, z: 400};
+  const {position: cameraPosition} = rest?.camera || {position: {x: 0, y: -400, z: 400}};
 
   let isAnimating = false; // This tracks if the orbital control animation fn has been started
 
